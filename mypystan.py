@@ -385,8 +385,26 @@ class StanFit4model:
                             ret2[split_key[0]].append([item])
                         else:
                             ret2[split_key[0]][row].append(item)
+                    
+                    # 3rd-order tensor parameter
+                    elif len(split_key) == 4:
+                        row = int(split_key[1])-1
+                        col = int(split_key[2])-1
+                        lay = int(split_key[3])-1
+                        # first row
+                        if not split_key[0] in ret2.keys():
+                            ret2[split_key[0]] = [[[item]]]
+                        # first column
+                        elif len(ret2[split_key[0]]) <= row:
+                            ret2[split_key[0]].append([[item]])
+                        else:
+                            if len(ret2[split_key[0]][row]) <= col:
+                                ret2[split_key[0]][row].append([item])
+                            else:
+                                ret2[split_key[0]][row][col].append(item)
+                        
                     else:
-                        raise "tensor parameter is not currently supported"
+                        raise "4th-ordered tensor parameter is not currently supported"
                                         
             # transposing the array variables
             for key, item in ret2.items():
@@ -396,7 +414,9 @@ class StanFit4model:
                 # matrix case
                 elif len(numpy.array(item).shape) == 3:
                     ret2[key] = numpy.transpose(numpy.array(item), (2, 0, 1))
-                    
+                
+                elif len(numpy.array(item).shape) == 4:
+                    ret2[key] = numpy.transpose(numpy.array(item), (3, 0, 1, 2))
             # permutation
             ret3 = collections.OrderedDict()
             
